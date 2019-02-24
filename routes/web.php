@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/about', function () {
+    return '<h1>Halo</h1>'
+        . 'Selamat datang di webapp<br/>'
+        . 'Laravel is here';
+});
