@@ -21,3 +21,6 @@ Route::get('/testmodel', function () {
     $query = App\Post::all();
     return $query;
 });
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
