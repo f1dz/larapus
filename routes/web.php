@@ -14,3 +14,13 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/about', 'MyController@showAbout');
+
+Route::get('/testmodel', function () {
+    $query = App\Post::all();
+    return $query;
+});
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
