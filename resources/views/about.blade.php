@@ -10,5 +10,10 @@
   <h1>Halo</h1>
   Selamat datang di webapp saya.<br>
   Laravel, emang keren banget!
+  <br>
+  {!! Form::open(['url' => 'post/save']) !!}
+  {!! Form::text('username') !!}
+  {!! Form::label('email', 'E-mail address', ['class' => 'awesome']) !!}
+  {!! Form::close() !!}
 </body>
 </html>
