@@ -16,13 +16,13 @@ class Author extends Model
     public static function boot() {
         parent::boot();
 
-        self::deleting(function(){
+        self::deleting(function($author){
             // Cek apakah penulis punya buku
-            if($this->books->count() > 0) {
+            if($author->books->count() > 0) {
                 // Menyiapkan pesan error
-                $html = "Penulis $this->name tidak bisa dihapus karena masih mempunyai buku";
+                $html = "Penulis $author->name tidak bisa dihapus karena masih mempunyai buku";
                 $html .= '<ul>';
-                foreach ($this->books as $book) {
+                foreach ($author->books as $book) {
                     $html .= "<li>$book->title</li>";
                 }
                 $html .= '</ul>';
