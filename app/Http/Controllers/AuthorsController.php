@@ -13,6 +13,8 @@ class AuthorsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
+     * @param Builder $htmlBuilder
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, Builder $htmlBuilder)

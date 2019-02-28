@@ -13,16 +13,16 @@ class Author extends Model
         return $this->hasMany('App\Book');
     }
 
-    public function boot() {
+    public static function boot() {
         parent::boot();
 
         self::deleting(function(){
             // Cek apakah penulis punya buku
-            if($author->books->count() > 0) {
+            if($this->books->count() > 0) {
                 // Menyiapkan pesan error
-                $html = "Penulis $author->name tidak bisa dihapus karena masih mempunyai buku";
+                $html = "Penulis $this->name tidak bisa dihapus karena masih mempunyai buku";
                 $html .= '<ul>';
-                foreach ($author->books as $book) {
+                foreach ($this->books as $book) {
                     $html .= "<li>$book->title</li>";
                 }
                 $html .= '</ul>';
