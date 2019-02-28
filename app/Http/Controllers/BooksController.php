@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Book;
 use function compact;
+use const DIRECTORY_SEPARATOR;
 use Illuminate\Http\Request;
-use function round;
+use Illuminate\Support\Facades\Session;
+use function public_path;
+use function redirect;
 use function route;
 use function view;
 use Yajra\Datatables\Datatables;
@@ -52,7 +55,7 @@ class BooksController extends Controller
      */
     public function create()
     {
-        //
+        return view("books.create");
     }
 
     /**
@@ -63,7 +66,33 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'title'     => 'required|unique:books,title',
+            'author_id' => 'required|exists:authors,id',
+            'amount'    => 'required|numeric',
+            'cover'     => 'image|max:2048'
+        ]);
+
+        $book = Book::create($request->except('cover'));
+
+        if($request->hasFile('cover')) {
+            $uploaded_cover = $request->file('cover');
+            $ext            = $uploaded_cover->getClientOriginalExtension();
+            $filename       = md5(time()) . '.' . $ext;
+
+            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
+            $uploaded_cover->move($destinationPath, $filename);
+
+            $book->cover = $filename;
+            $book->save();
+        }
+
+        Session::flash('flash_notification', [
+            'level' => 'success',
+            'message' => "Berhasil menyimpan $book->title"
+        ]);
+
+        return redirect()->route('books.index');
     }
 
     /**
