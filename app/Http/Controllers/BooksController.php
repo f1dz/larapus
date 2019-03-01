@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Book;
 use function compact;
 use const DIRECTORY_SEPARATOR;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 use function public_path;
 use function redirect;
 use function route;
+use function time;
 use function view;
 use Yajra\Datatables\Datatables;
 use Yajra\Datatables\Html\Builder;
@@ -114,7 +117,8 @@ class BooksController extends Controller
      */
     public function edit($id)
     {
-        //
+        $book = Book::find($id);
+        return view('books.edit')->with(compact('book'));
     }
 
     /**
@@ -122,11 +126,51 @@ class BooksController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'title'     => 'required|unique:books,title,' . $id,
+            'author_id' => 'required|exists:authors,id',
+            'amount'    => 'required|numeric',
+            'cover'     => 'image|max:2048'
+        ]);
+
+        $book = Book::find($id);
+        $book->update($request->all());
+
+        if($request->hasFile('cover')) {
+            $filename = null;
+            $uploaded_cover = $request->file('cover');
+            $ext = $uploaded_cover->getClientOriginalExtension();
+
+            $filename = md5(time()). '.' . $ext;
+            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
+
+            $uploaded_cover->move($destinationPath, $filename);
+
+            if($book->cover) {
+                $old_cover = $book->cover;
+                $filePath = public_path() . DIRECTORY_SEPARATOR . '.' . $old_cover;
+
+                try {
+                    File::delete($filePath);
+                } catch (FileNotFoundException $e) {
+
+                }
+             }
+
+            $book->cover = $filename;
+            $book->save();
+        }
+
+        Session::flash("flash_notification", [
+            'level' => 'success',
+            'message' => "Berhasil menyimpan buku $book->title"
+        ]);
+
+        return redirect()->route('books.index');
     }
 
     /**
