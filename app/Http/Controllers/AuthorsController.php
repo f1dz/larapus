@@ -13,6 +13,8 @@ class AuthorsController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
+     * @param Builder $htmlBuilder
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, Builder $htmlBuilder)
@@ -24,7 +26,8 @@ class AuthorsController extends Controller
                     return view('datatable._action', [
                         'model' => $author,
                         'form_url' => route('authors.destroy', $author->id),
-                        'edit_url' => route('authors.edit', $author->id)
+                        'edit_url' => route('authors.edit', $author->id),
+                        'confirm_message' => 'Yakin menghapus ' . $author->name
                     ]);
                 })->make(true);
         }

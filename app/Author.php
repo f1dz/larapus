@@ -13,10 +13,10 @@ class Author extends Model
         return $this->hasMany('App\Book');
     }
 
-    public function boot() {
+    public static function boot() {
         parent::boot();
 
-        self::deleting(function(){
+        self::deleting(function($author){
             // Cek apakah penulis punya buku
             if($author->books->count() > 0) {
                 // Menyiapkan pesan error
