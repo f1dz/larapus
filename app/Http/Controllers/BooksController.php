@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Book;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 use function compact;
 use const DIRECTORY_SEPARATOR;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -64,18 +66,11 @@ class BooksController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreBookRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreBookRequest $request)
     {
-        $this->validate($request, [
-            'title'     => 'required|unique:books,title',
-            'author_id' => 'required|exists:authors,id',
-            'amount'    => 'required|numeric',
-            'cover'     => 'image|max:2048'
-        ]);
-
         $book = Book::create($request->except('cover'));
 
         if($request->hasFile('cover')) {
@@ -124,19 +119,12 @@ class BooksController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param UpdateBookRequest $request
+     * @param  int $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookRequest $request, $id)
     {
-        $this->validate($request, [
-            'title'     => 'required|unique:books,title,' . $id,
-            'author_id' => 'required|exists:authors,id',
-            'amount'    => 'required|numeric',
-            'cover'     => 'image|max:2048'
-        ]);
-
         $book = Book::find($id);
         $book->update($request->all());
 
